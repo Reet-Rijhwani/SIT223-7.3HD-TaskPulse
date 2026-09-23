@@ -1,0 +1,18 @@
+groups:
+  - name: taskpulse-health
+    rules:
+      - alert: TaskPulseProductionUnavailable
+        expr: up{job="taskpulse-production-readiness"} == 0
+        for: 15s
+        labels:
+          severity: critical
+        annotations:
+          summary: Production readiness check is failing
+          description: Prometheus could not scrape the production readiness endpoint.
+      - alert: TaskPulseHighServerErrorRatio
+        expr: sum(rate(taskpulse_requests_total{status=~"5.."}[2m])) / clamp_min(sum(rate(taskpulse_requests_total[2m])), 0.001) > 0.05
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: More than 5 percent of recent HTTP requests are 5xx.

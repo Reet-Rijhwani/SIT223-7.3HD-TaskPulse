@@ -1,0 +1,28 @@
+services:
+  prometheus:
+    image: prom/prometheus:v3.2.1
+    restart: unless-stopped
+    ports: ["127.0.0.1:19090:9090"]
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus_data:/prometheus
+    networks: [monitoring]
+  alertmanager:
+    image: prom/alertmanager:v0.28.1
+    restart: unless-stopped
+    ports: ["127.0.0.1:19093:9093"]
+    volumes:
+      - ./monitoring/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+    networks: [monitoring]
+  alert-receiver:
+    build: ./monitoring/alert-receiver
+    restart: unless-stopped
+    ports: ["127.0.0.1:19094:9094"]
+    networks: [monitoring]
+networks:
+  monitoring:
+    name: taskpulse-monitoring
+    external: true
+volumes:
+  prometheus_data:

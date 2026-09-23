@@ -1,0 +1,10 @@
+.git
+.pytest_cache
+.coverage
+htmlcov
+__pycache__
+*.pyc
+tests
+monitoring
+reports
+*.zip
